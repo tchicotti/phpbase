@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # Serviço do MariaDB
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword  # Altere para uma senha segura
+      MYSQL_DATABASE: phpbase            # Opcional: cria um banco inicial
+      MYSQL_USER: usuario                # Opcional: cria um usuário
+      MYSQL_PASSWORD: senha              # Opcional: senha do usuário
+    volumes:
+      - ./db_data:/var/lib/mysql     # Persistência dos dados
+    ports:
+      - "3306:3306"                     # Porta do MySQL
+    networks:
+      - rede_interna
+
+  # Serviço do phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    depends_on:
+      - mariadb
+    environment:
+      PMA_HOST: mariadb                  # Conecta ao container do MariaDB
+      PMA_PORT: 3306                     # Porta do MySQL
+      PMA_ARBITRARY: 0                   # Não permite conexões arbitrárias
+    ports:
+      - "8080:80"                        # Acesso via http://localhost:8080
+    networks:
+      - rede_interna
+
+# Definições de volumes e redes
+volumes:
+  mariadb_data:                          # Volume para persistir dados do MariaDB
+
+networks:
+  rede_interna:                          # Rede isolada para comunicação entre os containers
